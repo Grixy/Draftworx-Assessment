@@ -58,12 +58,12 @@ h2 {
   background-color: #c82333;
 }
 
-.btn-remove {
+.btn-upd {
   background-color: #ffc107;
   color: white;
 }
 
-.btn-remove:hover {
+.btn-upd:hover {
   background-color: #e0a800;
 }
 
@@ -120,4 +120,13 @@ h2 {
 
 .btn-clear-search:hover {
   background-color: #e0a800;
+}
+
+.note-container {
+  display: flex;
+  align-items: center;
+}
+
+.note-container .input-field {
+  margin-right: 10px; /* Adjust margin as needed */
 }

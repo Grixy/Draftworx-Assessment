@@ -9,7 +9,6 @@ class App extends Component {
     super(props);
     this.state = {
       contacts: [],
-      showContactForm: false,
       newContact: {
         contactName: '',
         phoneNumber: '',
@@ -41,6 +40,7 @@ class App extends Component {
         minWidth: 150,
         editable: true,
       },
+      formHidden: true, // Add a state variable to track form visibility
     };
     this.API_URL = 'http://localhost:5108/';
   }
@@ -158,6 +158,7 @@ class App extends Component {
     this.setState((prevState) => {
       const updatedNotes = [...prevState.newContact.notes];
       updatedNotes.splice(index, 1);
+      this.refreshContacts();
       return {
         newContact: {
           ...prevState.newContact,
@@ -203,6 +204,12 @@ class App extends Component {
   };
 
   deleteClick = (id) => {
+    this.setState({
+      formHidden: true, // Show the form
+    });
+
+    this.setState({ specificContactId: null });
+
     fetch(this.API_URL + 'api/Contacts/DeleteContact/' + id, {
       method: 'DELETE',
     })
@@ -256,6 +263,7 @@ class App extends Component {
         reasonForCall: selectedContact.reasonForCall,
         notes: selectedContact.notes,
       },
+      formHidden: false, // Show the form
     });
   };
 
@@ -296,6 +304,12 @@ class App extends Component {
     this.setState({ specificContact: null });
   };
 
+  handleFormToggle = () => {
+    this.setState((prevState) => ({
+      formHidden: !prevState.formHidden,
+    }));
+  };
+
   render() {
     const {
       contacts,
@@ -305,6 +319,7 @@ class App extends Component {
       columnDefs,
       defaultColDef,
       errors,
+      formHidden,
     } = this.state;
 
     // Options for the bestTimeToContact dropdown
@@ -313,7 +328,7 @@ class App extends Component {
     return (
       <div className='App'>
         <h2>Contacts App</h2>
-        <div className='contact-form'>
+        <div className='contact-form' id='search-form'>
           <input
             type='text'
             value={specificContactId}
@@ -322,16 +337,11 @@ class App extends Component {
             className='input-field'
           />
           <button className='btn btn-get' onClick={this.getSpecificContact}>
-            Search Contact
+            Search Contact by ID
           </button>
+
           {specificContact && (
             <div className='specific-contact'>
-              <button
-                className='btn btn-clear-search'
-                onClick={this.clearSpecificContact}
-              >
-                Clear Search
-              </button>
               <h3>Specific Contact Details</h3>
               <p>
                 <b>{specificContact.contactName}</b>
@@ -343,8 +353,9 @@ class App extends Component {
                 Notes:{' '}
                 {specificContact.notes ? specificContact.notes.join(', ') : ''}
               </p>
+
               <button
-                className='btn btn-update'
+                className='btn btn-upd'
                 onClick={() => this.updateClick(specificContact.id)}
               >
                 Update Contact
@@ -355,94 +366,124 @@ class App extends Component {
               >
                 Delete Contact
               </button>
-            </div>
-          )}
-        </div>
-        <div className='contact-form'>
-          <input
-            type='text'
-            name='contactName'
-            value={newContact.contactName}
-            placeholder='Contact Name'
-            onChange={this.handleInputChange}
-            className='input-field'
-          />
-          {errors.contactName && (
-            <div className='invalid-feedback'>{errors.contactName}</div>
-          )}
-          <input
-            type='text'
-            name='phoneNumber'
-            value={newContact.phoneNumber}
-            placeholder='Phone Number'
-            onChange={this.handleInputChange}
-            className='input-field'
-          />
-          {errors.phoneNumber && (
-            <div className='invalid-feedback'>{errors.phoneNumber}</div>
-          )}
-          <select
-            name='bestTimeToContact'
-            value={newContact.bestTimeToContact}
-            onChange={this.handleInputChange}
-            className='input-field'
-          >
-            <option value=''>Best Time To Contact</option>
-            {timeOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          {errors.bestTimeToContact && (
-            <div className='invalid-feedback'>{errors.bestTimeToContact}</div>
-          )}
-          <input
-            type='text'
-            name='reasonForCall'
-            value={newContact.reasonForCall}
-            placeholder='Reason For Call'
-            onChange={this.handleInputChange}
-            className='input-field'
-          />
-          {errors.reasonForCall && (
-            <div className='invalid-feedback'>{errors.reasonForCall}</div>
-          )}
-          {newContact.notes.map((note, index) => (
-            <div key={index}>
-              <input
-                type='text'
-                value={note}
-                placeholder='Note'
-                onChange={(e) => this.handleNoteChange(index, e)}
-                className='input-field'
-              />
               <button
-                className='btn btn-remove'
-                onClick={() => this.removeNoteField(index)}
+                className='btn btn-add-contact'
+                onClick={this.clearSpecificContact}
               >
-                Remove Note
+                Confirm and Close
               </button>
             </div>
-          ))}
-          <button className='btn btn-add-note' onClick={this.addNoteField}>
-            Add Note
-          </button>
-          <div>
-            <button className='btn btn-add-contact' onClick={this.addClick}>
-              Add Contact
+          )}
+          <div>OR</div>
+          {formHidden && (
+            <button
+              className='btn btn-add-contact'
+              onClick={this.handleFormToggle}
+            >
+              Create New Contact
             </button>
-            {specificContactId && ( // Render Update Contact button only if specificContactId is not null
-              <button
-                className='btn btn-update-contact'
-                onClick={this.handleUpdateContactButtonClick}
-              >
-                Update Contact
-              </button>
-            )}
-          </div>
+          )}
         </div>
-
+        {!formHidden && (
+          <div className='contact-form' id='info-form'>
+            <input
+              type='text'
+              name='contactName'
+              value={newContact.contactName}
+              placeholder='Contact Name'
+              onChange={this.handleInputChange}
+              className='input-field'
+            />
+            {errors.contactName && (
+              <div className='invalid-feedback'>{errors.contactName}</div>
+            )}
+            <input
+              type='text'
+              name='phoneNumber'
+              value={newContact.phoneNumber}
+              placeholder='Phone Number'
+              onChange={this.handleInputChange}
+              className='input-field'
+              maxLength={10}
+            />
+            {errors.phoneNumber && (
+              <div className='invalid-feedback'>{errors.phoneNumber}</div>
+            )}
+            <select
+              name='bestTimeToContact'
+              value={newContact.bestTimeToContact}
+              onChange={this.handleInputChange}
+              className='input-field'
+            >
+              <option value=''>Best Time To Contact</option>
+              {timeOptions.map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors.bestTimeToContact && (
+              <div className='invalid-feedback'>{errors.bestTimeToContact}</div>
+            )}
+            <input
+              type='text'
+              name='reasonForCall'
+              value={newContact.reasonForCall}
+              placeholder='Reason For Call'
+              onChange={this.handleInputChange}
+              className='input-field'
+            />
+            {errors.reasonForCall && (
+              <div className='invalid-feedback'>{errors.reasonForCall}</div>
+            )}
+            {newContact.notes.map((note, index) => (
+              <div key={index} className='note-container'>
+                <input
+                  type='text'
+                  value={note}
+                  placeholder='Note'
+                  onChange={(e) => this.handleNoteChange(index, e)}
+                  className='input-field'
+                />
+                <button
+                  className='btn btn-delete'
+                  onClick={() => this.removeNoteField(index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button className='btn btn-add-note' onClick={this.addNoteField}>
+              Add Note
+            </button>
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '20px',
+                }}
+              >
+                {specificContactId && ( // Render Update Contact button only if specificContactId is not null
+                  <button
+                    className='btn btn-upd'
+                    onClick={this.handleUpdateContactButtonClick}
+                  >
+                    Update Contact
+                  </button>
+                )}
+                {!specificContactId && (
+                  <button
+                    className='btn btn-add-contact'
+                    onClick={this.addClick}
+                  >
+                    Add Contact
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         <div
           className='ag-theme-alpine'
           style={{ height: '500px', width: '100%', marginTop: '20px' }}
