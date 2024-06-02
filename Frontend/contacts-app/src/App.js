@@ -3,6 +3,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './App.css'; // Import the CSS file
+import InfoForm from './InfoForm'; // Import the new component
 
 class App extends Component {
   constructor(props) {
@@ -385,104 +386,17 @@ class App extends Component {
           )}
         </div>
         {!formHidden && (
-          <div className='contact-form' id='info-form'>
-            <input
-              type='text'
-              name='contactName'
-              value={newContact.contactName}
-              placeholder='Contact Name'
-              onChange={this.handleInputChange}
-              className='input-field'
-            />
-            {errors.contactName && (
-              <div className='invalid-feedback'>{errors.contactName}</div>
-            )}
-            <input
-              type='text'
-              name='phoneNumber'
-              value={newContact.phoneNumber}
-              placeholder='Phone Number'
-              onChange={this.handleInputChange}
-              className='input-field'
-              maxLength={10}
-            />
-            {errors.phoneNumber && (
-              <div className='invalid-feedback'>{errors.phoneNumber}</div>
-            )}
-            <select
-              name='bestTimeToContact'
-              value={newContact.bestTimeToContact}
-              onChange={this.handleInputChange}
-              className='input-field'
-            >
-              <option value=''>Best Time To Contact</option>
-              {timeOptions.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            {errors.bestTimeToContact && (
-              <div className='invalid-feedback'>{errors.bestTimeToContact}</div>
-            )}
-            <input
-              type='text'
-              name='reasonForCall'
-              value={newContact.reasonForCall}
-              placeholder='Reason For Call'
-              onChange={this.handleInputChange}
-              className='input-field'
-            />
-            {errors.reasonForCall && (
-              <div className='invalid-feedback'>{errors.reasonForCall}</div>
-            )}
-            {newContact.notes.map((note, index) => (
-              <div key={index} className='note-container'>
-                <input
-                  type='text'
-                  value={note}
-                  placeholder='Note'
-                  onChange={(e) => this.handleNoteChange(index, e)}
-                  className='input-field'
-                />
-                <button
-                  className='btn btn-delete'
-                  onClick={() => this.removeNoteField(index)}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button className='btn btn-add-note' onClick={this.addNoteField}>
-              Add Note
-            </button>
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  marginTop: '20px',
-                }}
-              >
-                {specificContactId && ( // Render Update Contact button only if specificContactId is not null
-                  <button
-                    className='btn btn-upd'
-                    onClick={this.handleUpdateContactButtonClick}
-                  >
-                    Update Contact
-                  </button>
-                )}
-                {!specificContactId && (
-                  <button
-                    className='btn btn-add-contact'
-                    onClick={this.addClick}
-                  >
-                    Add Contact
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <InfoForm
+            newContact={newContact}
+            errors={errors}
+            timeOptions={timeOptions}
+            handleInputChange={this.handleInputChange}
+            handleNoteChange={this.handleNoteChange}
+            addNoteField={this.addNoteField}
+            removeNoteField={this.removeNoteField}
+            handleUpdateContactButtonClick={this.handleUpdateContactButtonClick}
+            specificContactId={specificContactId}
+          />
         )}
         <div
           className='ag-theme-alpine'
