@@ -14,4 +14,8 @@ React.js, .Net Core
 
 -SETUP-
 
-Please ensure that your API_URL variable in the App.js file correctly points to the localhost instance of the API once it runs on your machine. It should be port 5108 by default, since that's what's defined in the launchsettings.json file of the API project.
+1) Default API port is localhost:5108. I am using Visual Studio to run it.
+2) Please run the React project from within Draftworx-Assessment/Frontend/contacts-app. The primary branch is "main" as default.
+3) There is a Demo video included in the project root which goes over the key features of the assessment.
+
+Thanks!
