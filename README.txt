@@ -10,7 +10,10 @@ Visual Studio, Visual Studio Code
 
 -Frameworks- 
 
-React.js, .Net Core
+React.js 18.3.1, 
+.Net 6,
+node v20.8.0
+npm 10.1.0
 
 -SETUP-
 
