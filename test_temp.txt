@@ -1,1 +1,3 @@
 This exists to test our source control from various sources.
+
+- this text is to update it from Visual Studio (and not VS Code) and see that it flags with Git.
