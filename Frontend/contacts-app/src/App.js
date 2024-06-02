@@ -10,7 +10,7 @@ class App extends Component {
         phoneNumber: '',
         bestTimeToContact: '',
         reasonForCall: '',
-        notes: [],
+        notes: [''], // Initialize with one empty note
       },
     };
     this.API_URL = 'http://localhost:5108/';
@@ -41,7 +41,43 @@ class App extends Component {
     }));
   };
 
-  async addClick() {
+  handleNoteChange = (index, e) => {
+    const { value } = e.target;
+    this.setState((prevState) => {
+      const updatedNotes = [...prevState.newContact.notes];
+      updatedNotes[index] = value;
+      return {
+        newContact: {
+          ...prevState.newContact,
+          notes: updatedNotes,
+        },
+      };
+    });
+  };
+
+  addNoteField = () => {
+    this.setState((prevState) => ({
+      newContact: {
+        ...prevState.newContact,
+        notes: [...prevState.newContact.notes, ''],
+      },
+    }));
+  };
+
+  removeNoteField = (index) => {
+    this.setState((prevState) => {
+      const updatedNotes = [...prevState.newContact.notes];
+      updatedNotes.splice(index, 1);
+      return {
+        newContact: {
+          ...prevState.newContact,
+          notes: updatedNotes,
+        },
+      };
+    });
+  };
+
+  addClick = () => {
     const { newContact } = this.state;
 
     fetch(this.API_URL + 'api/Contacts/CreateContact', {
@@ -60,7 +96,7 @@ class App extends Component {
             phoneNumber: '',
             bestTimeToContact: '',
             reasonForCall: '',
-            notes: [],
+            notes: [''], // Reset notes to one empty note
           },
           contacts: [...prevState.contacts, result],
         }));
@@ -68,9 +104,9 @@ class App extends Component {
       .catch((error) => {
         console.error('Error adding contact:', error);
       });
-  }
+  };
 
-  async deleteClick(id) {
+  deleteClick(id) {
     fetch(this.API_URL + 'api/Contacts/DeleteContact/' + id, {
       method: 'DELETE',
     })
@@ -82,6 +118,48 @@ class App extends Component {
       .catch((error) => {
         console.error('Error deleting contact:', error);
       });
+  }
+
+  updateContact() {
+    const { newContact, selectedContactId } = this.state; // Access selected contact id from state
+    alert('contact: ' + selectedContactId);
+
+    fetch(this.API_URL + 'api/Contacts/UpdateContact/' + selectedContactId, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newContact),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        alert('Contact updated successfully');
+        this.refreshContacts();
+      })
+      .catch((error) => {
+        console.error('Error updating contact:', error);
+      });
+  }
+
+  updateClick(id) {
+    console.log('ID:', id);
+
+    const selectedContact = this.state.contacts.find(
+      (contact) => contact.Id === id
+    );
+
+    console.log('Selected Contact:', selectedContact);
+
+    this.setState({
+      selectedContactId: id,
+      newContact: {
+        contactName: selectedContact.ContactName,
+        phoneNumber: selectedContact.PhoneNumber,
+        bestTimeToContact: selectedContact.BestTimeToContact,
+        reasonForCall: selectedContact.ReasonForCall,
+        notes: selectedContact.Notes,
+      },
+    });
   }
 
   render() {
@@ -118,7 +196,25 @@ class App extends Component {
             placeholder='Reason For Call'
             onChange={this.handleInputChange}
           />
-          <button onClick={() => this.addClick()}>Add Contact</button>
+          {newContact.notes.map((note, index) => (
+            <div key={index}>
+              <input
+                type='text'
+                value={note}
+                placeholder='Note'
+                onChange={(e) => this.handleNoteChange(index, e)}
+              />
+              <button onClick={() => this.removeNoteField(index)}>
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <button onClick={this.addNoteField}>Add Note</button>
+          <button onClick={this.addClick}>Add Contact</button>
+          <button onClick={() => this.updateContact(newContact.Id)}>
+            Update Contact
+          </button>
         </div>
         {contacts.length > 0 ? (
           contacts.map((contact) => (
@@ -133,6 +229,9 @@ class App extends Component {
               &nbsp;
               <button onClick={() => this.deleteClick(contact.Id)}>
                 Delete Contact
+              </button>
+              <button onClick={() => this.updateClick(contact.Id)}>
+                Update Contact
               </button>
             </div>
           ))
