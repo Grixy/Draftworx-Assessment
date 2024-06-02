@@ -20,53 +20,53 @@ namespace Draftworx_Assessment_API.Controllers
             {
                 new Contact
                 {
-                    Id = 1,
-                    ContactName = "John Doe",
-                    PhoneNumber = "123-456-7890",
-                    BestTimeToContact = "Morning",
-                    ReasonForCall = "Inquiry",
-                    Notes = new List<string> { "First note", "Second note" }
+                    id = 1,
+                    contactName = "John Doe",
+                    phoneNumber = "123-456-7890",
+                    bestTimeToContact = "Morning",
+                    reasonForCall = "Inquiry",
+                    notes = new List<string> { "First note", "Second note" }
                 },
                 new Contact
                 {
-                    Id = 2,
-                    ContactName = "Jane Smith",
-                    PhoneNumber = "987-654-3210",
-                    BestTimeToContact = "Afternoon",
-                    ReasonForCall = "Support",
-                    Notes = new List<string> { "Initial note" }
+                    id = 2,
+                    contactName = "Jane Smith",
+                    phoneNumber = "987-654-3210",
+                    bestTimeToContact = "Afternoon",
+                    reasonForCall = "Support",
+                    notes = new List<string> { "Initial note" }
                 },
                 new Contact
                 {
-                    Id = 3,
-                    ContactName = "Alice Johnson",
-                    PhoneNumber = "082-123-4567",
-                    BestTimeToContact = "Evening",
-                    ReasonForCall = "Follow-up",
-                    Notes = new List<string> { "First contact note" }
+                    id = 3,
+                    contactName = "Alice Johnson",
+                    phoneNumber = "082-123-4567",
+                    bestTimeToContact = "Evening",
+                    reasonForCall = "Follow-up",
+                    notes = new List<string> { "First contact note" }
                 }
             };
       NextId = 4; // Set the next ID to 4 since we have 3 initial contacts
     }
 
-    [HttpGet]
+    [HttpGet("GetContacts")]
     public JsonResult GetContacts()
     {
       return new JsonResult(Contacts);
     }
 
-    [HttpPost]
+    [HttpPost("CreateContact")]
     public JsonResult CreateContact([FromBody] Contact newContact)
     {
-      newContact.Id = NextId++;
+      newContact.id = NextId++;
       Contacts.Add(newContact);
       return new JsonResult(newContact);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetContact/{id}")]
     public JsonResult GetContact(int id)
     {
-      var contact = Contacts.FirstOrDefault(c => c.Id == id);
+      var contact = Contacts.FirstOrDefault(c => c.id == id);
       if (contact == null)
       {
         return new JsonResult("Contact not found") { StatusCode = StatusCodes.Status404NotFound };
@@ -74,26 +74,26 @@ namespace Draftworx_Assessment_API.Controllers
       return new JsonResult(contact);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("UpdateContact/{id}")]
     public JsonResult UpdateContact(int id, [FromBody] Contact updatedContact)
     {
-      var contact = Contacts.FirstOrDefault(c => c.Id == id);
+      var contact = Contacts.FirstOrDefault(c => c.id == id);
       if (contact == null)
       {
         return new JsonResult("Contact not found") { StatusCode = StatusCodes.Status404NotFound };
       }
-      contact.ContactName = updatedContact.ContactName;
-      contact.PhoneNumber = updatedContact.PhoneNumber;
-      contact.BestTimeToContact = updatedContact.BestTimeToContact;
-      contact.ReasonForCall = updatedContact.ReasonForCall;
-      contact.Notes = updatedContact.Notes;
+      contact.contactName = updatedContact.contactName;
+      contact.phoneNumber = updatedContact.phoneNumber;
+      contact.bestTimeToContact = updatedContact.bestTimeToContact;
+      contact.reasonForCall = updatedContact.reasonForCall;
+      contact.notes = updatedContact.notes;
       return new JsonResult(contact);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("DeleteContact/{id}")]
     public JsonResult DeleteContact(int id)
     {
-      var contact = Contacts.FirstOrDefault(c => c.Id == id);
+      var contact = Contacts.FirstOrDefault(c => c.id == id);
       if (contact == null)
       {
         return new JsonResult("Contact not found") { StatusCode = StatusCodes.Status404NotFound };
