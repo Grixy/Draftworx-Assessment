@@ -49,13 +49,13 @@ namespace Draftworx_Assessment_API.Controllers
       NextId = 4; // Set the next ID to 4 since we have 3 initial contacts
     }
 
-    [HttpGet]
+    [HttpGet("GetContacts")]
     public JsonResult GetContacts()
     {
       return new JsonResult(Contacts);
     }
 
-    [HttpPost]
+    [HttpPost("CreateContact")]
     public JsonResult CreateContact([FromBody] Contact newContact)
     {
       newContact.Id = NextId++;
@@ -63,7 +63,7 @@ namespace Draftworx_Assessment_API.Controllers
       return new JsonResult(newContact);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetContact/{id}")]
     public JsonResult GetContact(int id)
     {
       var contact = Contacts.FirstOrDefault(c => c.Id == id);
@@ -74,7 +74,7 @@ namespace Draftworx_Assessment_API.Controllers
       return new JsonResult(contact);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("UpdateContact/{id}")]
     public JsonResult UpdateContact(int id, [FromBody] Contact updatedContact)
     {
       var contact = Contacts.FirstOrDefault(c => c.Id == id);
@@ -90,7 +90,7 @@ namespace Draftworx_Assessment_API.Controllers
       return new JsonResult(contact);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("DeleteContact/{id}")]
     public JsonResult DeleteContact(int id)
     {
       var contact = Contacts.FirstOrDefault(c => c.Id == id);

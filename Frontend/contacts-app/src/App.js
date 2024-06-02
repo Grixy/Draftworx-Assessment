@@ -5,6 +5,13 @@ class App extends Component {
     super(props);
     this.state = {
       contacts: [],
+      newContact: {
+        contactName: '',
+        phoneNumber: '',
+        bestTimeToContact: '',
+        reasonForCall: '',
+        notes: [],
+      },
     };
     this.API_URL = 'http://localhost:5108/';
   }
@@ -14,7 +21,7 @@ class App extends Component {
   }
 
   async refreshContacts() {
-    fetch(this.API_URL + 'api/Contacts')
+    fetch(this.API_URL + 'api/Contacts/GetContacts')
       .then((response) => response.json())
       .then((data) => {
         this.setState({ contacts: data });
@@ -24,44 +31,98 @@ class App extends Component {
       });
   }
 
-  async addClick() {
-    var newNotes = document.getElementById('newContact').value;
-    const data = new FormData();
-    data.append('newNotes', newNotes);
+  handleInputChange = (e) => {
+    const { name, value } = e.target;
+    this.setState((prevState) => ({
+      newContact: {
+        ...prevState.newContact,
+        [name]: value,
+      },
+    }));
+  };
 
-    fetch(this.API_URL + 'api/CreateContact', {
+  async addClick() {
+    const { newContact } = this.state;
+
+    fetch(this.API_URL + 'api/Contacts/CreateContact', {
       method: 'POST',
-      body: data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newContact),
     })
       .then((res) => res.json())
       .then((result) => {
-        alert(result);
-        this.refreshContacts();
+        alert('Contact added successfully');
+        this.setState((prevState) => ({
+          newContact: {
+            contactName: '',
+            phoneNumber: '',
+            bestTimeToContact: '',
+            reasonForCall: '',
+            notes: [],
+          },
+          contacts: [...prevState.contacts, result],
+        }));
+      })
+      .catch((error) => {
+        console.error('Error adding contact:', error);
       });
   }
 
   async deleteClick(id) {
-    fetch(this.API_URL + 'api/DeleteContact?id=' + id, {
+    fetch(this.API_URL + 'api/Contacts/DeleteContact/' + id, {
       method: 'DELETE',
     })
       .then((res) => res.json())
       .then((result) => {
         alert(result);
         this.refreshContacts();
+      })
+      .catch((error) => {
+        console.error('Error deleting contact:', error);
       });
   }
 
   render() {
-    const { contacts } = this.state;
+    const { contacts, newContact } = this.state;
     return (
       <div className='App'>
         <h2>Contacts App</h2>
-        <input id='newContact' />
-        &nbsp;
-        <button onClick={() => this.addClick()}>Add Contact</button>
+        <div>
+          <input
+            type='text'
+            name='contactName'
+            value={newContact.contactName}
+            placeholder='Contact Name'
+            onChange={this.handleInputChange}
+          />
+          <input
+            type='text'
+            name='phoneNumber'
+            value={newContact.phoneNumber}
+            placeholder='Phone Number'
+            onChange={this.handleInputChange}
+          />
+          <input
+            type='text'
+            name='bestTimeToContact'
+            value={newContact.bestTimeToContact}
+            placeholder='Best Time To Contact'
+            onChange={this.handleInputChange}
+          />
+          <input
+            type='text'
+            name='reasonForCall'
+            value={newContact.reasonForCall}
+            placeholder='Reason For Call'
+            onChange={this.handleInputChange}
+          />
+          <button onClick={() => this.addClick()}>Add Contact</button>
+        </div>
         {contacts.length > 0 ? (
           contacts.map((contact) => (
-            <div key={contact.id}>
+            <div key={contact.Id}>
               <p>
                 <b>{contact.ContactName}</b>
               </p>
@@ -70,7 +131,7 @@ class App extends Component {
               <p>Reason For Call: {contact.ReasonForCall}</p>
               <p>Notes: {contact.Notes ? contact.Notes.join(', ') : ''}</p>{' '}
               &nbsp;
-              <button onClick={() => this.deleteClick(contact.id)}>
+              <button onClick={() => this.deleteClick(contact.Id)}>
                 Delete Contact
               </button>
             </div>
