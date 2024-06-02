@@ -332,7 +332,7 @@ class App extends Component {
           <input
             type='text'
             value={specificContactId}
-            placeholder='Enter Contact ID'
+            placeholder='Enter Contact ID - our placeholder data has ID values of 1, 2 and 3.'
             onChange={this.handleSpecificContactIdChange}
             className='input-field'
           />
