@@ -10,8 +10,44 @@ namespace Draftworx_Assessment_API.Controllers
   [ApiController]
   public class ContactsController : ControllerBase
   {
-    private static List<Contact> Contacts = new List<Contact>();
-    private static int NextId = 1;
+    private static List<Contact> Contacts;
+    private static int NextId;
+
+    static ContactsController()
+    {
+      // Initialize the contacts list with three initial contacts. Naturally we'd rather be using a db for this, but this is a POC by design.
+      Contacts = new List<Contact>
+            {
+                new Contact
+                {
+                    Id = 1,
+                    ContactName = "John Doe",
+                    PhoneNumber = "123-456-7890",
+                    BestTimeToContact = "Morning",
+                    ReasonForCall = "Inquiry",
+                    Notes = new List<string> { "First note", "Second note" }
+                },
+                new Contact
+                {
+                    Id = 2,
+                    ContactName = "Jane Smith",
+                    PhoneNumber = "987-654-3210",
+                    BestTimeToContact = "Afternoon",
+                    ReasonForCall = "Support",
+                    Notes = new List<string> { "Initial note" }
+                },
+                new Contact
+                {
+                    Id = 3,
+                    ContactName = "Alice Johnson",
+                    PhoneNumber = "082-123-4567",
+                    BestTimeToContact = "Evening",
+                    ReasonForCall = "Follow-up",
+                    Notes = new List<string> { "First contact note" }
+                }
+            };
+      NextId = 4; // Set the next ID to 4 since we have 3 initial contacts
+    }
 
     [HttpGet]
     public JsonResult GetContacts()
