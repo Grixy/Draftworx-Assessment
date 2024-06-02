@@ -22,16 +22,16 @@ namespace Draftworx_Assessment_API.Controllers
                 {
                     id = 1,
                     contactName = "John Doe",
-                    phoneNumber = "123-456-7890",
+                    phoneNumber = "1234567890",
                     bestTimeToContact = "Morning",
                     reasonForCall = "Inquiry",
-                    notes = new List<string> { "First note", "Second note" }
+                    notes = new List<string> { "Job Application", "General Query" }
                 },
                 new Contact
                 {
                     id = 2,
                     contactName = "Jane Smith",
-                    phoneNumber = "987-654-3210",
+                    phoneNumber = "9876543210",
                     bestTimeToContact = "Afternoon",
                     reasonForCall = "Support",
                     notes = new List<string> { "Initial note" }
@@ -40,10 +40,10 @@ namespace Draftworx_Assessment_API.Controllers
                 {
                     id = 3,
                     contactName = "Alice Johnson",
-                    phoneNumber = "082-123-4567",
+                    phoneNumber = "0821234567",
                     bestTimeToContact = "Evening",
                     reasonForCall = "Follow-up",
-                    notes = new List<string> { "First contact note" }
+                    notes = new List<string> { "This person likes ice cream." }
                 }
             };
       NextId = 4; // Set the next ID to 4 since we have 3 initial contacts
