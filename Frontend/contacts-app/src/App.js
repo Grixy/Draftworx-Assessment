@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import './App.css'; // Import the CSS file
-import InfoForm from './InfoForm'; // Import the new component
+import './App.css';
+import InfoForm from './InfoForm';
+import SearchForm from './SearchForm';
 
 class App extends Component {
   constructor(props) {
@@ -329,62 +330,17 @@ class App extends Component {
     return (
       <div className='App'>
         <h2>Contacts App</h2>
-        <div className='contact-form' id='search-form'>
-          <input
-            type='text'
-            value={specificContactId}
-            placeholder='Enter Contact ID - our placeholder data has ID values of 1, 2 and 3.'
-            onChange={this.handleSpecificContactIdChange}
-            className='input-field'
-          />
-          <button className='btn btn-get' onClick={this.getSpecificContact}>
-            Search Contact by ID
-          </button>
-
-          {specificContact && (
-            <div className='specific-contact'>
-              <h3>Specific Contact Details</h3>
-              <p>
-                <b>{specificContact.contactName}</b>
-              </p>
-              <p>Phone Number: {specificContact.phoneNumber}</p>
-              <p>Best Time To Contact: {specificContact.bestTimeToContact}</p>
-              <p>Reason For Call: {specificContact.reasonForCall}</p>
-              <p>
-                Notes:{' '}
-                {specificContact.notes ? specificContact.notes.join(', ') : ''}
-              </p>
-
-              <button
-                className='btn btn-upd'
-                onClick={() => this.updateClick(specificContact.id)}
-              >
-                Update Contact
-              </button>
-              <button
-                className='btn btn-delete'
-                onClick={() => this.deleteClick(specificContact.id)}
-              >
-                Delete Contact
-              </button>
-              <button
-                className='btn btn-add-contact'
-                onClick={this.clearSpecificContact}
-              >
-                Confirm and Close
-              </button>
-            </div>
-          )}
-          <div>OR</div>
-          {formHidden && (
-            <button
-              className='btn btn-add-contact'
-              onClick={this.handleFormToggle}
-            >
-              Create New Contact
-            </button>
-          )}
-        </div>
+        <SearchForm
+          specificContactId={specificContactId}
+          handleSpecificContactIdChange={this.handleSpecificContactIdChange}
+          getSpecificContact={this.getSpecificContact}
+          specificContact={specificContact}
+          formHidden={formHidden}
+          handleFormToggle={this.handleFormToggle}
+          clearSpecificContact={this.clearSpecificContact}
+          updateClick={this.updateClick}
+          deleteClick={this.deleteClick}
+        />
         {!formHidden && (
           <InfoForm
             newContact={newContact}
@@ -396,6 +352,7 @@ class App extends Component {
             removeNoteField={this.removeNoteField}
             handleUpdateContactButtonClick={this.handleUpdateContactButtonClick}
             specificContactId={specificContactId}
+            addClick={this.addClick}
           />
         )}
         <div

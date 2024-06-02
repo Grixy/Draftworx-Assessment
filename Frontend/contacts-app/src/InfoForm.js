@@ -12,6 +12,7 @@ class InfoForm extends Component {
       removeNoteField,
       handleUpdateContactButtonClick,
       specificContactId,
+      addClick, // Add addClick prop
     } = this.props;
 
     return (
@@ -103,7 +104,7 @@ class InfoForm extends Component {
               </button>
             )}
             {!specificContactId && (
-              <button className='btn btn-add-contact' onClick={this.addClick}>
+              <button className='btn btn-add-contact' onClick={addClick}>
                 Add Contact
               </button>
             )}
