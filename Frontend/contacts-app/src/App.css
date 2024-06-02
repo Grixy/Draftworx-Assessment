@@ -1,0 +1,132 @@
+.App {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+h2 {
+  color: #333;
+  text-align: center;
+}
+
+.contact-form {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  display: block;
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin: 5px 0;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #797979;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-update {
+  background-color: #28a745;
+}
+
+.btn-update:hover {
+  background-color: #218838;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+.btn-upd {
+  background-color: #ffc107;
+  color: white;
+}
+
+.btn-upd:hover {
+  background-color: #e0a800;
+}
+
+.btn-add-note {
+  background-color: #17a2b8;
+}
+
+.btn-add-note:hover {
+  background-color: #138496;
+}
+
+.btn-add-contact {
+  background-color: #28a745;
+}
+
+.btn-add-contact:hover {
+  background-color: #218838;
+}
+
+.btn-update-contact {
+  background-color: #6c757d;
+}
+
+.btn-update-contact:hover {
+  background-color: #5a6268;
+}
+
+.specific-contact {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.specific-contact h3 {
+  margin-top: 0;
+}
+
+.is-invalid {
+  border: 1px solid red; /* Style for invalid input */
+}
+
+.invalid-feedback {
+  color: red; /* Style for error message */
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.btn-clear-search {
+  background-color: #ffc107;
+  color: white;
+}
+
+.btn-clear-search:hover {
+  background-color: #e0a800;
+}
+
+.note-container {
+  display: flex;
+  align-items: center;
+}
+
+.note-container .input-field {
+  margin-right: 10px; /* Adjust margin as needed */
+}
