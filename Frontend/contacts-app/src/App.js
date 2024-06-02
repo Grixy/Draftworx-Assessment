@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
+import { Component } from 'react';
 
 class App extends Component {
   constructor(props) {
@@ -6,44 +8,33 @@ class App extends Component {
     this.state = {
       contacts: [],
     };
-    this.API_URL = 'http://localhost:5108/';
   }
+
+  //This is naturally not something we would normally have here, but for our proof of concept I'm directly referencing the port for the API project as a variable in this space, instead of a config setting.
+  API_URL = 'http://localhost:5108/';
 
   componentDidMount() {
     this.refreshContacts();
   }
 
-  refreshContacts() {
-    fetch(this.API_URL + 'api/Contacts')
+  async refreshContacts() {
+    fetch(this.API_URL + 'api/contacts-app/GetContacts')
       .then((response) => response.json())
       .then((data) => {
         this.setState({ contacts: data });
-      })
-      .catch((error) => {
-        console.error('Error fetching contacts:', error);
       });
   }
-
   render() {
     const { contacts } = this.state;
     return (
       <div className='App'>
         <h2>Contacts App</h2>
-        {contacts.length > 0 ? (
-          contacts.map((contact) => (
-            <div key={contact.id}>
-              <p>
-                <b>{contact.ContactName}</b>
-              </p>
-              <p>Phone Number: {contact.PhoneNumber}</p>
-              <p>Best Time To Contact: {contact.BestTimeToContact}</p>
-              <p>Reason For Call: {contact.ReasonForCall}</p>
-              <p>Notes: {contact.Notes ? contact.Notes.join(', ') : ''}</p>{' '}
-            </div>
-          ))
-        ) : (
-          <p>No contacts found</p>
-        )}
+
+        {contacts.map((contact, index) => (
+          <p key={index}>
+            <b>* {contact.ContactName}</b>
+          </p>
+        ))}
       </div>
     );
   }
