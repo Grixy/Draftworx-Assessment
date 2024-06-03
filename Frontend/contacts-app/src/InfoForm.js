@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+//This component is the editable form that houses the user info for updating an existing user or creating a new one.
 class InfoForm extends Component {
   render() {
     const {
@@ -12,7 +13,7 @@ class InfoForm extends Component {
       removeNoteField,
       handleUpdateContactButtonClick,
       specificContactId,
-      addClick, // Add addClick prop
+      addClick,
     } = this.props;
 
     return (

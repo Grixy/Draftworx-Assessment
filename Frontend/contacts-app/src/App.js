@@ -20,7 +20,7 @@ class App extends Component {
       },
       specificContactId: '',
       specificContact: null,
-      errors: {}, // Initialize errors state
+      errors: {},
       updateFromButton: false,
       columnDefs: [
         { headerName: 'Contact Name', field: 'contactName' },
@@ -44,22 +44,26 @@ class App extends Component {
       },
       formHidden: true, // Add a state variable to track form visibility
     };
-    this.API_URL = 'http://localhost:5108/';
+    this.API_URL = 'http://localhost:5108/'; // Our hardcoded API route. This is, of course, not ideal. We'd manually have stored our API path and relevant keys in a config, but keeping it like this for a POC.
   }
 
   componentDidMount() {
+    //Track our initial load completion.
     this.refreshContacts();
   }
 
   notesFormatter = (params) => {
+    //Cleans up notes string array.
     return params.value ? params.value.join(', ') : '';
   };
 
   handleSpecificContactIdChange = (e) => {
+    //If we're selecting/searching for a specific customer.
     this.setState({ specificContactId: e.target.value });
   };
 
   getSpecificContact = () => {
+    //Get a specific customer info.
     const { specificContactId } = this.state;
 
     fetch(this.API_URL + 'api/Contacts/GetContact/' + specificContactId)
@@ -74,11 +78,12 @@ class App extends Component {
       })
       .catch((error) => {
         console.error('Error fetching specific contact:', error);
-        alert('Contact not found');
+        alert('Contact not found'); //Instead of alerts we might favour error screens or modals.
       });
   };
 
   async refreshContacts() {
+    //Pull the whole contact list. Needs to update independantly of other features so its async.
     fetch(this.API_URL + 'api/Contacts/GetContacts')
       .then((response) => response.json())
       .then((data) => {
@@ -90,6 +95,7 @@ class App extends Component {
   }
 
   handleInputChange = (e) => {
+    //Validation.
     const { name, value } = e.target;
     let errorMessage = '';
 
@@ -134,6 +140,7 @@ class App extends Component {
   };
 
   handleNoteChange = (index, e) => {
+    //If the note for the new/updating contact get changed, we track it here.
     const { value } = e.target;
     this.setState((prevState) => {
       const updatedNotes = [...prevState.newContact.notes];
@@ -148,6 +155,7 @@ class App extends Component {
   };
 
   addNoteField = () => {
+    //Add a new, empty note to the users notes.
     this.setState((prevState) => ({
       newContact: {
         ...prevState.newContact,
@@ -157,6 +165,7 @@ class App extends Component {
   };
 
   removeNoteField = (index) => {
+    //Remove the current Notes field.
     this.setState((prevState) => {
       const updatedNotes = [...prevState.newContact.notes];
       updatedNotes.splice(index, 1);
@@ -171,6 +180,7 @@ class App extends Component {
   };
 
   addClick = () => {
+    //All click logic for the Add button.
     const { newContact } = this.state;
 
     // Check if non-nullable fields are empty
@@ -179,6 +189,7 @@ class App extends Component {
       return; // Prevent form submission
     }
 
+    //Would prefer to have all fetch calls mapped somewhere else, but keeping this here for POC.
     fetch(this.API_URL + 'api/Contacts/CreateContact', {
       method: 'POST',
       headers: {
@@ -206,6 +217,7 @@ class App extends Component {
   };
 
   deleteClick = (id) => {
+    //Was the delete button clicked?
     this.setState({
       formHidden: true, // Show the form
     });
@@ -227,6 +239,7 @@ class App extends Component {
   };
 
   updateContact = () => {
+    //This is the actual update functionality. It goes through the click handler first.
     const { newContact, specificContactId, updateFromButton } = this.state;
 
     fetch(this.API_URL + 'api/Contacts/UpdateContact/' + specificContactId, {
@@ -251,6 +264,7 @@ class App extends Component {
   };
 
   updateClick = (id) => {
+    //Was the update button clicked?
     this.setState({ specificContactId: id });
 
     const selectedContact = this.state.contacts.find(
@@ -270,6 +284,7 @@ class App extends Component {
   };
 
   handleUpdateContactButtonClick = () => {
+    //was the update contact button clicked?
     const { newContact } = this.state;
 
     // Check if non-nullable fields are empty
@@ -283,6 +298,7 @@ class App extends Component {
     });
   };
 
+  //renderActions is a by-product of using agGrid. It handles our buttons in the Actions column of the table.
   renderActions = (params) => {
     return (
       <div>
@@ -302,10 +318,12 @@ class App extends Component {
     );
   };
 
+  //Clear the specificContact variable.
   clearSpecificContact = () => {
     this.setState({ specificContact: null });
   };
 
+  //Hide/Show input form.
   handleFormToggle = () => {
     this.setState((prevState) => ({
       formHidden: !prevState.formHidden,
