@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+//This component is a read-only form containing user info. Does also have 1 text input for searchng a user id.
 class SearchForm extends Component {
   render() {
     const {
