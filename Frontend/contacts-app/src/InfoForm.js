@@ -12,12 +12,50 @@ class InfoForm extends Component {
     }
   };
 
+  handleInputChange = (e) => {
+    const { name, value } = e.target;
+    let errorMessage = '';
+
+    const validators = {
+      contactName: {
+        test: /^[a-zA-Z\s]*$/,
+        maxLength: 500,
+        message:
+          'Contact Name should be an alphabetical string and have a maximum length of 500 characters',
+      },
+      phoneNumber: {
+        test: /^\d{10}$/,
+        message: 'Phone Number should be a 10-digit number',
+      },
+      reasonForCall: {
+        maxLength: 1000,
+        message:
+          'Reason For Call should have a maximum length of 1000 characters',
+      },
+      notes: {
+        maxLength: 2000,
+        message: 'Notes should have a maximum length of 2000 characters',
+      },
+    };
+
+    if (validators[name]) {
+      const { test, maxLength, message } = validators[name];
+      if (
+        (test && !test.test(value)) ||
+        (maxLength && value.length > maxLength)
+      ) {
+        errorMessage = message;
+      }
+    }
+
+    this.props.handleInputChange(name, value, errorMessage);
+  };
+
   render() {
     const {
       newContact,
       errors,
       timeOptions,
-      handleInputChange,
       handleNoteChange,
       addNoteField,
       removeNoteField,
@@ -35,7 +73,7 @@ class InfoForm extends Component {
           name='contactName'
           value={newContact.contactName}
           placeholder='Contact Name'
-          onChange={handleInputChange}
+          onChange={this.handleInputChange}
           className='input-field'
         />
         {errors.contactName && (
@@ -46,7 +84,7 @@ class InfoForm extends Component {
           name='phoneNumber'
           value={newContact.phoneNumber}
           placeholder='Phone Number'
-          onChange={handleInputChange}
+          onChange={this.handleInputChange}
           className='input-field'
           maxLength={10}
         />
@@ -56,7 +94,7 @@ class InfoForm extends Component {
         <select
           name='bestTimeToContact'
           value={newContact.bestTimeToContact}
-          onChange={handleInputChange}
+          onChange={this.handleInputChange}
           className='input-field'
         >
           <option value=''>Best Time To Contact</option>
@@ -74,7 +112,7 @@ class InfoForm extends Component {
           name='reasonForCall'
           value={newContact.reasonForCall}
           placeholder='Reason For Call'
-          onChange={handleInputChange}
+          onChange={this.handleInputChange}
           className='input-field'
         />
         {errors.reasonForCall && (
@@ -84,7 +122,7 @@ class InfoForm extends Component {
           <div key={index} className='note-container'>
             <input
               type='text'
-              value={note}
+              value={note || ''}
               placeholder='Note'
               onChange={(e) => handleNoteChange(index, e)}
               className='input-field'

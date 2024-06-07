@@ -2,6 +2,22 @@ import React, { Component } from 'react';
 
 //This component is a read-only form containing user info. Does also have 1 text input for searchng a user id.
 class SearchForm extends Component {
+  handleFormToggle = () => {
+    const { formHidden, handleInputChange, clearSpecificContact } = this.props;
+    // Toggle form visibility
+    this.props.handleFormToggle();
+    // Reset fields if the form is being shown
+    if (!formHidden) {
+      handleInputChange('contactName', '');
+      handleInputChange('phoneNumber', '');
+      handleInputChange('bestTimeToContact', '');
+      handleInputChange('reasonForCall', '');
+      this.props.handleSpecificContactIdChange({ target: { value: '' } }); // Reset specificContactId
+      handleInputChange('notes', ['']); // Reset notes to empty array with one empty string
+      clearSpecificContact(); // Clear specific contact details if any
+    }
+  };
+
   render() {
     const {
       specificContactId,
@@ -9,7 +25,6 @@ class SearchForm extends Component {
       getSpecificContact,
       specificContact,
       formHidden,
-      handleFormToggle,
       deleteClick,
       updateClick,
       clearSpecificContact,
@@ -63,11 +78,9 @@ class SearchForm extends Component {
           </div>
         )}
         <div>OR</div>
-        {formHidden && (
-          <button className='btn btn-add-contact' onClick={handleFormToggle}>
-            Create New Contact
-          </button>
-        )}
+        <button className='btn btn-add-contact' onClick={this.handleFormToggle}>
+          {formHidden ? 'Create New Contact' : 'Cancel'}
+        </button>
       </div>
     );
   }

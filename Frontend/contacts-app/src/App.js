@@ -81,38 +81,7 @@ class App extends Component {
     }
   }
 
-  handleInputChange = (e) => {
-    const { name, value } = e.target;
-    let errorMessage = '';
-
-    switch (name) {
-      case 'contactName':
-        if (!/^[a-zA-Z\s]*$/.test(value) || value.length > 500) {
-          errorMessage =
-            'Contact Name should be an alphabetical string and have a maximum length of 500 characters';
-        }
-        break;
-      case 'phoneNumber':
-        if (!/^\d{10}$/.test(value)) {
-          errorMessage = 'Phone Number should be a 10-digit number';
-        }
-        break;
-      case 'reasonForCall':
-        if (value.length > 1000) {
-          errorMessage =
-            'Reason For Call should have a maximum length of 1000 characters';
-        }
-        break;
-      case 'notes':
-        if (value.length > 2000) {
-          errorMessage =
-            'Notes should have a maximum length of 2000 characters';
-        }
-        break;
-      default:
-        break;
-    }
-
+  handleInputChange = (name, value, errorMessage) => {
     this.setState((prevState) => ({
       newContact: {
         ...prevState.newContact,
@@ -152,7 +121,6 @@ class App extends Component {
     this.setState((prevState) => {
       const updatedNotes = [...prevState.newContact.notes];
       updatedNotes.splice(index, 1);
-      this.refreshContacts();
       return {
         newContact: {
           ...prevState.newContact,
@@ -316,6 +284,7 @@ class App extends Component {
           getSpecificContact={this.getSpecificContact}
           specificContact={specificContact}
           formHidden={formHidden}
+          handleInputChange={this.handleInputChange}
           handleFormToggle={this.handleFormToggle}
           clearSpecificContact={this.clearSpecificContact}
           updateClick={this.updateClick}
