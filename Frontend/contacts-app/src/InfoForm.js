@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 
-//This component is the editable form that houses the user info for updating an existing user or creating a new one.
 class InfoForm extends Component {
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { specificContactId, handleUpdateContactButtonClick, addClick } =
+      this.props;
+    if (specificContactId) {
+      handleUpdateContactButtonClick();
+    } else {
+      addClick();
+    }
+  };
+
   render() {
     const {
       newContact,
@@ -11,13 +21,15 @@ class InfoForm extends Component {
       handleNoteChange,
       addNoteField,
       removeNoteField,
-      handleUpdateContactButtonClick,
       specificContactId,
-      addClick,
     } = this.props;
 
     return (
-      <div className='contact-form' id='info-form'>
+      <form
+        className='contact-form'
+        id='info-form'
+        onSubmit={this.handleSubmit}
+      >
         <input
           type='text'
           name='contactName'
@@ -78,6 +90,7 @@ class InfoForm extends Component {
               className='input-field'
             />
             <button
+              type='button'
               className='btn btn-delete'
               onClick={() => removeNoteField(index)}
             >
@@ -85,7 +98,11 @@ class InfoForm extends Component {
             </button>
           </div>
         ))}
-        <button className='btn btn-add-note' onClick={addNoteField}>
+        <button
+          type='button'
+          className='btn btn-add-note'
+          onClick={addNoteField}
+        >
           Add Note
         </button>
         <div>
@@ -96,22 +113,12 @@ class InfoForm extends Component {
               marginTop: '20px',
             }}
           >
-            {specificContactId && ( // Render Update Contact button only if specificContactId is not null
-              <button
-                className='btn btn-upd'
-                onClick={handleUpdateContactButtonClick}
-              >
-                Update Contact
-              </button>
-            )}
-            {!specificContactId && (
-              <button className='btn btn-add-contact' onClick={addClick}>
-                Add Contact
-              </button>
-            )}
+            <button type='submit' className='btn btn-submit'>
+              {specificContactId ? 'Update Contact' : 'Add Contact'}
+            </button>
           </div>
         </div>
-      </div>
+      </form>
     );
   }
 }

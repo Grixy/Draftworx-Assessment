@@ -5,6 +5,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './App.css';
 import InfoForm from './InfoForm';
 import SearchForm from './SearchForm';
+import { apiRequest } from './Api';
 
 class App extends Component {
   constructor(props) {
@@ -42,60 +43,45 @@ class App extends Component {
         minWidth: 150,
         editable: true,
       },
-      formHidden: true, // Add a state variable to track form visibility
+      formHidden: true,
     };
-    this.API_URL = 'http://localhost:5108/'; // Our hardcoded API route. This is, of course, not ideal. We'd manually have stored our API path and relevant keys in a config, but keeping it like this for a POC.
   }
 
   componentDidMount() {
-    //Track our initial load completion.
     this.refreshContacts();
   }
 
   notesFormatter = (params) => {
-    //Cleans up notes string array.
     return params.value ? params.value.join(', ') : '';
   };
 
   handleSpecificContactIdChange = (e) => {
-    //If we're selecting/searching for a specific customer.
     this.setState({ specificContactId: e.target.value });
   };
 
-  getSpecificContact = () => {
-    //Get a specific customer info.
+  getSpecificContact = async () => {
     const { specificContactId } = this.state;
 
-    fetch(this.API_URL + 'api/Contacts/GetContact/' + specificContactId)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Contact not found');
-      })
-      .then((data) => {
-        this.setState({ specificContact: data });
-      })
-      .catch((error) => {
-        console.error('Error fetching specific contact:', error);
-        alert('Contact not found'); //Instead of alerts we might favour error screens or modals.
-      });
+    try {
+      const data = await apiRequest(
+        `api/Contacts/GetContact/${specificContactId}`
+      );
+      this.setState({ specificContact: data });
+    } catch (error) {
+      alert('Contact not found');
+    }
   };
 
   async refreshContacts() {
-    //Pull the whole contact list. Needs to update independantly of other features so its async.
-    fetch(this.API_URL + 'api/Contacts/GetContacts')
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({ contacts: data });
-      })
-      .catch((error) => {
-        console.error('Error fetching contacts:', error);
-      });
+    try {
+      const data = await apiRequest('api/Contacts/GetContacts');
+      this.setState({ contacts: data });
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+    }
   }
 
   handleInputChange = (e) => {
-    //Validation.
     const { name, value } = e.target;
     let errorMessage = '';
 
@@ -140,7 +126,6 @@ class App extends Component {
   };
 
   handleNoteChange = (index, e) => {
-    //If the note for the new/updating contact get changed, we track it here.
     const { value } = e.target;
     this.setState((prevState) => {
       const updatedNotes = [...prevState.newContact.notes];
@@ -155,7 +140,6 @@ class App extends Component {
   };
 
   addNoteField = () => {
-    //Add a new, empty note to the users notes.
     this.setState((prevState) => ({
       newContact: {
         ...prevState.newContact,
@@ -165,7 +149,6 @@ class App extends Component {
   };
 
   removeNoteField = (index) => {
-    //Remove the current Notes field.
     this.setState((prevState) => {
       const updatedNotes = [...prevState.newContact.notes];
       updatedNotes.splice(index, 1);
@@ -179,92 +162,77 @@ class App extends Component {
     });
   };
 
-  addClick = () => {
-    //All click logic for the Add button.
+  addClick = async () => {
     const { newContact } = this.state;
 
-    // Check if non-nullable fields are empty
     if (!newContact.contactName || !newContact.phoneNumber) {
       alert('Contact Name and Phone Number are required');
-      return; // Prevent form submission
+      return;
     }
 
-    //Would prefer to have all fetch calls mapped somewhere else, but keeping this here for POC.
-    fetch(this.API_URL + 'api/Contacts/CreateContact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newContact),
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        alert('Contact added successfully');
-        this.setState((prevState) => ({
-          newContact: {
-            contactName: '',
-            phoneNumber: '',
-            bestTimeToContact: '',
-            reasonForCall: '',
-            notes: [''],
-          },
-          contacts: [...prevState.contacts, result],
-        }));
-      })
-      .catch((error) => {
-        console.error('Error adding contact:', error);
-      });
+    try {
+      const result = await apiRequest(
+        'api/Contacts/CreateContact',
+        'POST',
+        newContact
+      );
+      alert('Contact added successfully');
+      this.setState((prevState) => ({
+        newContact: {
+          contactName: '',
+          phoneNumber: '',
+          bestTimeToContact: '',
+          reasonForCall: '',
+          notes: [''],
+        },
+        contacts: [...prevState.contacts, result],
+      }));
+    } catch (error) {
+      console.error('Error adding contact:', error);
+    }
   };
 
-  deleteClick = (id) => {
-    //Was the delete button clicked?
+  deleteClick = async (id) => {
     this.setState({
-      formHidden: true, // Show the form
+      formHidden: true,
     });
 
     this.setState({ specificContactId: null });
 
-    fetch(this.API_URL + 'api/Contacts/DeleteContact/' + id, {
-      method: 'DELETE',
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        alert(result);
-        this.refreshContacts();
-        this.setState({ specificContact: null });
-      })
-      .catch((error) => {
-        console.error('Error deleting contact:', error);
-      });
+    try {
+      const result = await apiRequest(
+        `api/Contacts/DeleteContact/${id}`,
+        'DELETE'
+      );
+      alert(result);
+      this.refreshContacts();
+      this.setState({ specificContact: null });
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+    }
   };
 
-  updateContact = () => {
-    //This is the actual update functionality. It goes through the click handler first.
+  updateContact = async () => {
     const { newContact, specificContactId, updateFromButton } = this.state;
 
-    fetch(this.API_URL + 'api/Contacts/UpdateContact/' + specificContactId, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newContact),
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        alert('Contact updated successfully');
-        this.refreshContacts();
-        this.setState({ specificContactId: '', updateFromButton: false });
-        if (updateFromButton) {
-          this.getSpecificContact();
-        }
-      })
-      .catch((error) => {
-        console.error('Error updating contact:', error);
-      });
+    try {
+      const result = await apiRequest(
+        `api/Contacts/UpdateContact/${specificContactId}`,
+        'PUT',
+        newContact
+      );
+      alert('Contact updated successfully');
+      this.refreshContacts();
+      this.setState({ specificContactId: '', updateFromButton: false });
+      if (updateFromButton) {
+        this.getSpecificContact();
+      }
+    } catch (error) {
+      console.error('Error updating contact:', error);
+    }
   };
 
   updateClick = (id) => {
-    //Was the update button clicked?
     this.setState({ specificContactId: id });
 
     const selectedContact = this.state.contacts.find(
@@ -279,18 +247,16 @@ class App extends Component {
         reasonForCall: selectedContact.reasonForCall,
         notes: selectedContact.notes,
       },
-      formHidden: false, // Show the form
+      formHidden: false,
     });
   };
 
   handleUpdateContactButtonClick = () => {
-    //was the update contact button clicked?
     const { newContact } = this.state;
 
-    // Check if non-nullable fields are empty
     if (!newContact.contactName || !newContact.phoneNumber) {
       alert('Contact Name and Phone Number are required');
-      return; // Prevent form submission
+      return;
     }
 
     this.setState({ updateFromButton: true }, () => {
@@ -298,7 +264,6 @@ class App extends Component {
     });
   };
 
-  //renderActions is a by-product of using agGrid. It handles our buttons in the Actions column of the table.
   renderActions = (params) => {
     return (
       <div>
@@ -318,12 +283,10 @@ class App extends Component {
     );
   };
 
-  //Clear the specificContact variable.
   clearSpecificContact = () => {
     this.setState({ specificContact: null });
   };
 
-  //Hide/Show input form.
   handleFormToggle = () => {
     this.setState((prevState) => ({
       formHidden: !prevState.formHidden,
@@ -342,7 +305,6 @@ class App extends Component {
       formHidden,
     } = this.state;
 
-    // Options for the bestTimeToContact dropdown
     const timeOptions = ['Morning', 'Afternoon', 'Any time'];
 
     return (
